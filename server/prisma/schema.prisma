@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  first_name String
+  last_name  String
+  user_id    Int
+  address    String
+  phone      String
+
+  count_of_orders Int
+
+  orders  Order[]
+  reviews Review[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+
+  name           String
+  description    String
+  price          Int
+  discount       Int    @default(0)
+  count_in_stock Int
+  rate           Int
+  count_of_sales Int
+
+  category_id Int
+  category    Category @relation(fields: [category_id], references: [id])
+
+  images    Image[]
+  reviews   Review[]
+  order_items OrderItem[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+
+  name        String
+  image       String
+  description String
+
+  parent_id Int?
+  parent Category? @relation("Tree", fields: [parent_id], references: [id])
+  childrens Category[] @relation("Tree")
+  products Product[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+
+  name       String
+  url        String
+  size       Int
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+
+  status      String
+  total       Int
+  user_tg_id  Int
+  user_id     Int
+  user        User        @relation(fields: [user_id], references: [id])
+  order_items OrderItem[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+
+  order_id Int
+  order    Order @relation(fields: [order_id], references: [id])
+
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+
+  rate Int
+  text String
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

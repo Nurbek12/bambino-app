@@ -1,18 +1,20 @@
-import express from 'express'
-import { join } from 'path'
 import cors from 'cors'
-
+import { join } from 'path'
+import express from 'express'
+import routes from './routes'
 
 const app = express()
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded())
-app.use(express.static(join(__dirname, '..', '..', 'client', 'dist')))
+app
+    .use(cors())
+    .use(express.json())
+    .use(express.urlencoded())
+    .use(routes)
+// app.use(express.static(join(__dirname, '..', '..', 'client', 'dist')))
 
-app.get('*', async (req, res) => res.sendFile(join(__dirname, '..', '..', 'client', 'dist', 'index.html')))
+// app.get('*', async (req, res) => res.sendFile(join(__dirname, '..', '..', 'client', 'dist', 'index.html')))
 
-app.listen(4000)
+    .listen(4000)
 
 // import { config } from 'dotenv'
 // import { Bot, GrammyError, HttpError, InlineKeyboard, Keyboard } from 'grammy'

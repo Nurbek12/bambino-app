@@ -28,13 +28,16 @@ export const useStore = defineStore('app', {
         },
         remove_from_cart(product: IProduct) {
             const p_index = this.get_cart.findIndex(p => p.id === product.id)
-            if(p_index > -1) {
+            if(!this.cart[p_index]?.quantity) this.cart.splice(p_index, 1)
+
+            else if(p_index > -1) {
                 this.cart[p_index].quantity > 1 ?
                     this.cart[p_index].quantity-- :
                     this.cart.splice(p_index, 1)
             }
 
-            this.set_local_storage('app-cart', this.saved)
+
+            this.set_local_storage('app-cart', this.get_cart)
         },
         set_local_storage(key: string, item: any) {
             localStorage.setItem(key, JSON.stringify(item))

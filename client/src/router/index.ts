@@ -7,10 +7,11 @@ export const router = createRouter({
         { path: '/', component: () => import('../pages/app/index.vue'), children: [
             { path: '', component: () => import('../pages/app/products.vue') },
             { path: '/product/:id', component: () => import('../pages/app/product.vue') },
+            { path: '/order/:id', component: () => import('../pages/app/order.vue') },
             { path: '/saved', component: () => import('../pages/app/saved.vue') },
             { path: '/orders', component: () => import('../pages/app/orders.vue') },
             { path: '/cart', component: () => import('../pages/app/cart.vue') },
-            { path: '/profile', component: () => import('../pages/app/profile.vue') },
+            { path: '/delivery', component: () => import('../pages/app/delivery.vue') },
         ] }
     ],
 })

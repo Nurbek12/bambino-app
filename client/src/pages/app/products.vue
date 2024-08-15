@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto py-4 space-y-4 bg-white">
+    <div class="container mx-auto space-y-4 bg-white pt-4 pb-24">
         <div class="flex items-center gap-2">
 
             <div class="relative flex items-center gap-4 rounded-xl bg-gray-100 w-full px-4">
@@ -25,7 +25,7 @@
 
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-4 pb-24">
+        <div class="grid grid-cols-2 gap-4">
             <product v-for="product in products" :key="product.id" :product="product" />
         </div>
     </div>

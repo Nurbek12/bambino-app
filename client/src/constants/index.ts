@@ -11,7 +11,7 @@ export const links = [
     { icon: AkHeart, title: 'Избранные', url: '/saved' },
     { icon: MdOutlinedShoppingCart, title: 'Корзина', url: '/cart' },
     { icon: AkShoppingBag, title: 'Покупки', url: '/orders' },
-    { icon: ClUser02, title: 'Профил', url: '/profile' },
+    // { icon: ClUser02, title: 'Профил', url: '/profile' },
 ]
 
 export const products: any[] = [

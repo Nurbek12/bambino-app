@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto pt-4 space-y-4 bg-white pb-24">
+    <div class="container mx-auto space-y-4 bg-white pt-4 pb-24">
         <div class="flex items-center gap-2">
             <button class="w-full py-1.5 cursor-pointer rounded-xl px-2 text-nowrap" v-for="st,i in Object.keys(order_statuses)" :key="i"
                 :class="st===status?'bg-primary-500 hover:bg-primary-600 text-white':'bg-gray-100 hover:bg-gray-200 active:bg-gray-300'" @click="status=st">

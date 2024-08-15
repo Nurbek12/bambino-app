@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto py-4 space-y-4 bg-white pb-24">
+    <div class="container mx-auto space-y-4 bg-white pt-4 pb-24">
         <div class="w-full flex items-center justify-between">
             <app-btn @click="router.back()">
                 <BsArrowLeft class="text-white size-5" />

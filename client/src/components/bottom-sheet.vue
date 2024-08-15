@@ -1,17 +1,53 @@
 <template>
-    <div v-if="model" class="fixed w-full h-full">
-        <div class="w-full">
-
-        </div>
-        <div class="w-full">
-            <slot />
-        </div>
+    <div :class="{'bg-black/40':model}" class="pointer-events-none top-0 left-0 fixed z-10 w-full h-full transition-all">
+        <transition name="sheet-open">
+            <div v-if="model" @click="model=false" class="pointer-events-auto w-full absolute top-0 h-[21%]" />
+        </transition>
+        <transition name="sheet-content">
+            <div v-if="model" @click.stop class="pointer-events-auto w-full absolute bottom-0 h-[80%] bg-white rounded-t-xl container py-2">
+                <div class="flex justify-between items-center py-2 w-full">
+                    <span>{{ props.title }}</span>
+                    <app-btn @click="model=false">
+                        <ClCloseMd class="text-white size-5" />
+                    </app-btn>
+                </div>
+                <slot />
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup lang="ts">
+import AppBtn from './app-btn.vue'
+import { ClCloseMd } from '@kalimahapps/vue-icons'
+
+const props = defineProps<{
+    title?: string
+}>()
 const model = defineModel({
     type: Boolean,
     default: false
 })
 </script>
+
+<style>
+.sheet-open-enter-active,
+.sheet-open-leave-active {
+    transition: opacity .2s;
+}
+
+.sheet-open-enter-from,
+.sheet-open-leave-to {
+    opacity: 0;
+}
+
+.sheet-content-enter-active,
+.sheet-content-leave-active {
+    transition: transform .2s;
+}
+
+.sheet-content-enter-from,
+.sheet-content-leave-to {
+    transform: translateY(100%);
+}
+</style>

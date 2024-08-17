@@ -48,7 +48,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-end gap-2">
                     <b class="text-lg text-primary-500">{{ (product.price - (product.price * product.discount)).toFixed(2) }} сум</b>
-                    <span class="line-through">{{ product.price }}</span>
+                    <b class="line-through text-gray-500">{{ product.price }}</b>
                 </div>
             </div>
         </div>

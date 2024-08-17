@@ -1,8 +1,5 @@
 <template>
-    <div :class="{'bg-black/40':model}" class="pointer-events-none top-0 left-0 fixed z-10 w-full h-full transition-all">
-        <transition name="sheet-open">
-            <div v-if="model" @click="model=false" class="pointer-events-auto w-full absolute top-0 h-[21%]" />
-        </transition>
+    <div @click="model=false" :class="model?'bg-black/40 pointer-events-auto':'pointer-events-none'" class="top-0 left-0 fixed z-10 w-full h-full transition-all">
         <transition name="sheet-content">
             <div v-if="model" @click.stop class="pointer-events-auto w-full absolute bottom-0 h-[80%] bg-white rounded-t-xl container py-2">
                 <div class="flex justify-between items-center py-2 w-full">

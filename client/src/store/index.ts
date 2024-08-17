@@ -9,7 +9,7 @@ export const useStore = defineStore('app', {
     getters: {
         get_cart: state => state.cart,
         get_total: state => state.cart.reduce((a, b) => {
-            return a + (b.price - b.price * b.discount) // TODO: change discount
+            return a + (b.quantity * (b.price - (b.price * b.discount)))
         }, 0).toFixed(2),
         get_saved: state => state.saved,
     },

@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center gap-2">
         <div>
-            <div class="rounded-xl overflow-hidden relative h-[50px] w-[50px]">
+            <div class="rounded-xl overflow-hidden relative h-[55px] w-[55px]">
                 <img :src="product.images[0].url" class="w-full h-full object-cover" alt="">
             </div>
         </div>
@@ -17,6 +17,7 @@
                 </div>
 
                 <div class="flex gap-2 items-center">
+                    
                     <app-btn @click="store.add_to_cart(product)" class="text-white">
                         <AkPlus class="size-4" />
                     </app-btn>

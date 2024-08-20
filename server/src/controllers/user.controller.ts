@@ -38,6 +38,22 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 }
 
+export const getMe = async (req: Request, res: Response) => {
+    try {
+        console.log(req.params.id);
+        
+        const user = await prisma.user.findFirst({
+            where: { user_id: +req.params.id },
+        })
+
+        console.log(user);
+        return res.status(200).json({ data: user })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
+    }
+}
+
 export const createUser =  async (req: Request, res: Response) => {
     try {
         const user = await prisma.user.create({ data: req.body })

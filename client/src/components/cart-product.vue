@@ -2,7 +2,7 @@
     <div class="flex items-center gap-2">
         <div>
             <div class="rounded-xl overflow-hidden relative h-[55px] w-[55px]">
-                <img :src="product.images[0].url" class="w-full h-full object-cover" alt="">
+                <img :src="baseURL+'/'+product.images[0].url" class="w-full h-full object-cover" alt="">
             </div>
         </div>
 
@@ -12,8 +12,8 @@
             <div class="flex items-start justify-between">
 
                 <div class="flex items-end gap-2">
-                    <b class="text-lg text-primary-500">{{ (store.get_cart.find(p => p.id === product.id)?.quantity! * (product.price - (product.price * product.discount))).toFixed(2) }} сум</b>
-                    <span>| {{ (product.price - (product.price * product.discount)).toFixed(2) }} сум</span>
+                    <b class="text-primary-500">{{ (store.get_cart.find(p => p.id === product.id)?.quantity! * (product.price! - (product.price! * product.discount!/100)))?.toLocaleString('en-EN') }} сум</b>
+                    <span class="text-sm">| {{ (product.price! - (product.price! * product.discount!/100))?.toLocaleString('en-EN') }} сум</span>
                 </div>
 
                 <div class="flex gap-2 items-center">
@@ -35,10 +35,11 @@
 </template>
 
 <script setup lang="ts">
+import { baseURL } from '@/api'
 import AppBtn from './app-btn.vue'
 import { useStore } from '../store'
 import { IProduct } from '../constants/types'
-import { AnFilledHeart, AnOutlinedHeart, AnFilledStar, MdOutlinedShoppingCart, AkPlus, AkMinus, BsChatFill, FaBagShopping } from '@kalimahapps/vue-icons'
+import { AkPlus, AkMinus } from '@kalimahapps/vue-icons'
 
 defineProps<{
     product: IProduct

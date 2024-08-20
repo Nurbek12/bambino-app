@@ -12,6 +12,9 @@ export const getAllOrders = async (req: Request, res: Response) => {
         const orderBy: any = req.query.sorting || {}
         const page = Number(req.query?.page) || 1
         const limit = Number(req.query?.limit) || 20
+        const status = req.query.status || ''
+
+        if(status) where.status = status
 
         const [count,orders] = await Promise.all([
             prisma.order.count({where}),
@@ -99,7 +102,7 @@ export const getMyOrders = async (req: Request, res: Response) => {
 
 export const getOrder =  async (req: Request, res: Response) => {
     try {
-        const order = await prisma.order.findMany({
+        const order = await prisma.order.findFirst({
             where: { id: +req.params.id },
             include: {
                 user: {
@@ -144,6 +147,8 @@ export const getOrder =  async (req: Request, res: Response) => {
 
 export const createOrder =  async (req: Request, res: Response) => {
     try {
+        console.log(req.body);
+        
         const order_items: any[] = [] 
         const { body_order_items, ...order_data } = req.body
         const order = await prisma.order.create({ data: order_data })
@@ -151,7 +156,7 @@ export const createOrder =  async (req: Request, res: Response) => {
         await prisma.user.update({ where: { id: order.user_id }, data: { count_of_orders: { increment: 1 } } })
 
         await Promise.all((body_order_items as BodyOrderItems[]).map(async oi => {
-            await prisma.product.update({ where: { id: oi.product_id }, data: { count_of_sales: { increment: 1 }, count_in_stock: { decrement: oi.quantity } } })
+            await prisma.product.update({ where: { id: oi.product_id }, data: { sold: { increment: 1 }, stock_count: { decrement: oi.quantity } } })
             const new_order_item = await prisma.orderItem.create({
                 data: {
                     quantity: oi.quantity,

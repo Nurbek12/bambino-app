@@ -10,28 +10,36 @@ export const getAllReviews = async (req: Request, res: Response) => {
         const search = req.query.search || ''
 
         if(search) Object.assign(where, {
-            first_name: {
-                contains: search
-            },
-            last_name: {
-                contains: search
-            },
-            phone: {
+            text: {
                 contains: search
             },
         })
 
-        const [count,users] = await Promise.all([
-            prisma.user.count({where}),
-            prisma.user.findMany({
+        const [count,reviews] = await Promise.all([
+            prisma.review.count({where}),
+            prisma.review.findMany({
                 where,
                 orderBy,
                 skip: (page-1)*limit,
                 take: limit,
+                include: {
+                    product: {
+                        select: {
+                            id: true,
+                            name: true,
+                        }
+                    },
+                    user: {
+                        select: {
+                            last_name: true,
+                            first_name: true,
+                        }
+                    }
+                }
             })
         ])
 
-        return res.status(200).json({ data: users, count })
+        return res.status(200).json({ data: reviews, count })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
@@ -41,8 +49,16 @@ export const getAllReviews = async (req: Request, res: Response) => {
 export const createReview =  async (req: Request, res: Response) => {
     try {
         const review = await prisma.review.create({ data: req.body })
+        const product = await prisma.product.findUnique({ where: { id: review.product_id } })
+        const rate = (product?.rate!+review.rate)/2
+        await prisma.product.update({
+            where: { id: req.body.product_id },
+            data: {
+                rate: { set: rate }
+            }
+        })
 
-        return res.status(200).json({ data: review })
+        return res.status(200).json({ data: review, rate })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 'error', message: 'Interlan server error.' })

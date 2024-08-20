@@ -4,7 +4,7 @@
             <product v-for="product in store.get_saved" :key="product.id" :product="product" />
         </div>
         <div v-show="store.get_saved.length===0" class="flex justify-center items-center">
-            <h1 class="text-lg text-gray-500">Нет продуктов</h1>
+            <h1 class="text-gray-500">Нет продуктов</h1>
         </div>
     </div>
 </template>

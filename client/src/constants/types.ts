@@ -6,6 +6,9 @@ export interface IUser {
     user_id: number
     address: string
     phone: string
+    geolocation?: string
+
+    count_of_orders?: number
   
     orders:  IOrder[]
     reviews: IReview[]
@@ -19,14 +22,14 @@ export interface IProduct {
 
     name: string
     description: string
-    price: number
-    discount: number
-    count_in_stock: number
-    quantity: number
-    rate: number
-    count_of_sales: number
+    price: number | null
+    discount: number | null
+    stock_count: number | null
+    quantity: number | null
+    rate: number | null
+    sold: number | null
   
-    category_id: number
+    category_id: number | null
     category: ICategory
   
     images:    IImage[]
@@ -45,7 +48,7 @@ export interface ICategory {
     description: string
   
     parent: ICategory
-    parent_id: number
+    parent_id: number | null
     childrens: ICategory[]
     products: IProduct[]
   
@@ -72,7 +75,7 @@ export interface IOrder {
 
     status: "pending" | "finish" | "canceled"
     total: number
-    user_id: number
+    user_id: number | null
     user: IUser
     order_items: IOrderItem[]
   
@@ -85,6 +88,7 @@ export interface IOrderItem {
 
     order_id: number
     order: IOrder
+    quantity: number
   
     product_id: number
     product: IProduct

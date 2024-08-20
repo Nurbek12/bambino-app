@@ -3,15 +3,28 @@ import {
     AkHeart,
     AkShoppingBag,
     MdOutlinedShoppingCart,
-    ClUser02,
+    AnOutlinedPieChart,
+    LuUsersRound,
+    ClChatCircle,
+    CaCategory,
+    AkShippingBox02,
 } from '@kalimahapps/vue-icons'
+import { IProduct } from './types'
 
 export const links = [
     { icon: McHome2Line, title: 'Главная', url: '/' },
     { icon: AkHeart, title: 'Избранные', url: '/saved' },
     { icon: MdOutlinedShoppingCart, title: 'Корзина', url: '/cart' },
     { icon: AkShoppingBag, title: 'Покупки', url: '/orders' },
-    // { icon: ClUser02, title: 'Профил', url: '/profile' },
+]
+
+export const admin_links = [
+    { icon: AnOutlinedPieChart, title: 'Главная', url: '/admin' },
+    { icon: AkShoppingBag, title: 'Покупки', url: '/admin/orders' },
+    { icon: AkShippingBox02, title: 'Продукты', url: '/admin/products' },
+    { icon: CaCategory, title: 'Категории', url: '/admin/categories' },
+    { icon: ClChatCircle, title: 'Отзывы', url: '/admin/reviews' },
+    { icon: LuUsersRound, title: 'Пользователи', url: '/admin/users' },
 ]
 
 export const products: any[] = [
@@ -330,8 +343,34 @@ export const categories = [
 ]
 
 export const order_statuses = {
-    "all": "Все",
+    "": "Все",
     "pending": "В ожидании",
     "finish": "Доставлено",
     "canceled": "Отменено",
+}
+
+export const order_status_items = {
+    "pending": ["В ожидание", "text-blue-500"],
+    "finish": ["Доставлено", "text-green-600"],
+    "canceled": ["Отменено", "text-amber-600"],
+}
+
+export const product_sortings: {id: number, sort: Partial<{ [key in keyof IProduct]: 'asc' | 'desc' }>, name: string}[] = [
+    { id: 0, name: 'Сначала старые', sort: { created_at: 'asc' } },
+    { id: 1, name: 'Сначала новые', sort: { created_at: 'desc' } },
+    { id: 2, name: 'Сначала без скидки', sort: { discount: 'asc' } },
+    { id: 3, name: 'Сначала со скидкой', sort: { discount: 'desc' } },
+    { id: 4, name: 'По названию (A-Z)', sort: { name: 'asc' } },
+    { id: 5, name: 'По названию (Z-A)', sort: { name: 'desc' } },
+    { id: 6, name: 'По цене (возрастание)', sort: { price: 'asc' } },
+    { id: 7, name: 'По цене (убывание)', sort: { price: 'desc' } },
+    { id: 8, name: 'По рейтингу (возрастание)', sort: { rate: 'asc' } },
+    { id: 9, name: 'По рейтингу (убывание)', sort: { rate: 'desc' } },
+    { id: 10, name: 'По продажам (возрастание)', sort: { sold: 'asc' } },
+    { id: 11, name: 'По продажам (убывание)', sort: { sold: 'desc' } },
+]
+
+export const human_file_size = (size: number) => {
+    var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+    return +((size / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['b', 'kb', 'mb', 'gb', 'tb'][i];
 }

@@ -35,13 +35,13 @@ model User {
 model Product {
   id Int @id @default(autoincrement())
 
-  name           String
-  description    String
-  price          Int
-  discount       Int    @default(0)
-  count_in_stock Int    @default(0)
-  rate           Int    @default(0)
-  count_of_sales Int    @default(0)
+  name        String
+  description String
+  price       Int
+  discount    Int    @default(0)
+  stock_count Int    @default(0)
+  rate        Int    @default(0)
+  sold        Int    @default(0)
 
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])
@@ -58,7 +58,7 @@ model Category {
   id Int @id @default(autoincrement())
 
   name        String
-  image       String
+  image       String?
   description String?
 
   parent_id Int?
@@ -88,8 +88,9 @@ model Order {
 
   status      String
   total       Int
-  user_tg_id  Int
+  user_tg_id  Int?
   user_id     Int
+  geolocation String?
   user        User        @relation(fields: [user_id], references: [id])
   order_items OrderItem[]
 
@@ -115,8 +116,9 @@ model OrderItem {
 model Review {
   id Int @id @default(autoincrement())
 
-  rate Int
-  text String
+  rate   Int
+  text   String
+  public Boolean @default(true)
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])

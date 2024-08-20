@@ -5,14 +5,20 @@ export const getAllProducts = async (req: Request, res: Response) => {
     try {
         const where: any = {}
         const orderBy: any = req.query.sorting || {}
+        const category: any = req.query.category || null
         const page = Number(req.query?.page) || 1
         const limit = Number(req.query?.limit) || 20
         const search = req.query.search || ''
 
         if(search) Object.assign(where, {
             name: {
-                contains: search
+                contains: search // TODO: mode: intensive
             },
+        })
+        if(category!==null) Object.assign(where, {
+            category_id: {
+                in: [category]
+            }
         })
 
         const [count,products] = await Promise.all([
@@ -22,10 +28,77 @@ export const getAllProducts = async (req: Request, res: Response) => {
                 orderBy,
                 skip: (page-1)*limit,
                 take: limit,
+                include: {
+                    images: {
+                        select: {
+                            id: true,
+                            url: true,
+                            size: true,
+                            name: true,
+                        }
+                    },
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            image: true,
+                            parent_id: true,
+                        }
+                    },
+                    reviews: {
+                        select: {
+                            id: true
+                        }
+                    }
+                }
             })
         ])
 
         return res.status(200).json({ data: products, count })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
+    }
+}
+
+export const getProduct = async (req: Request, res: Response) => {
+    try {
+        const product = await prisma.product.findFirst({
+                where: { id: +req.params.id },
+                include: {
+                    images: {
+                        select: {
+                            id: true,
+                            url: true,
+                            size: true,
+                            name: true,
+                        }
+                    },
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            image: true,
+                            parent_id: true,
+                        }
+                    },
+                    reviews: {
+                        select: {
+                            id: true,
+                            rate: true,
+                            text: true,
+                            user: {
+                                select: {
+                                    first_name: true,
+                                    last_name: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+        return res.status(200).json({ data: product })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
@@ -37,6 +110,36 @@ export const createProduct =  async (req: Request, res: Response) => {
         const product = await prisma.product.create({ data: req.body })
 
         return res.status(200).json({ data: product })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
+    }
+}
+
+export const addPhotoToProduct =  async (req: Request, res: Response) => {
+    try {
+        const images = await Promise.all((req.files as  Express.Multer.File[]).map((file) => {
+            return prisma.image.create({
+                data: {
+                    size: file.size,
+                    url: file.filename,
+                    name: file.originalname,
+                    product_id: +req.params.id,
+                }
+            })
+        }))
+        return res.status(200).json({ data: images })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
+    }
+}
+
+export const removePhoto =  async (req: Request, res: Response) => {
+    try {
+        await prisma.image.delete({ where: { id: +req.params.id } })
+
+        return res.status(200).json({ data: true })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 'error', message: 'Interlan server error.' })

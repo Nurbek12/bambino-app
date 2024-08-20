@@ -23,7 +23,7 @@
                     </app-btn>
                 </template>
             </div>
-            <img :src="product.images[0].url" class="w-full h-full object-cover" alt="">
+            <img :src="baseURL+'/'+product.images?.[0]?.url" class="w-full h-full object-cover" alt="">
         </div>
         <div class="pt-2">
             <router-link :to="`/product/${product.id}`">{{ product.name }}</router-link>
@@ -38,17 +38,17 @@
                 </div>
                 <div class="flex items-center gap-1">
                     <FaBagShopping class="size-3 text-green-400" />
-                    <b class="text-gray-500 text-sm">{{ product.count_of_sales }}</b>
+                    <b class="text-gray-500 text-sm">{{ product.sold }}</b>
                 </div>
                 <div class="flex items-center gap-1">
                     <AnFilledShop class="size-4 text-orange-400" />
-                    <b class="text-gray-500 text-sm">{{ product.count_in_stock }}</b>
+                    <b class="text-gray-500 text-sm">{{ product.stock_count }}</b>
                 </div>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-end gap-2">
-                    <b class="text-lg text-primary-500">{{ (product.price - (product.price * product.discount)).toFixed(2) }} сум</b>
-                    <b class="line-through text-gray-500">{{ product.price }}</b>
+                    <b class="text-lg text-primary-500">{{ (product.price! - (product.price! * product.discount!/100))?.toLocaleString('en-EN') }} сум</b>
+                    <b class="line-through text-gray-500">{{ product.price?.toLocaleString('en-EN') }}</b>
                 </div>
             </div>
         </div>
@@ -56,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import { baseURL } from '@/api'
 import AppBtn from './app-btn.vue'
 import { useStore } from '../store'
 import { IProduct } from '../constants/types'

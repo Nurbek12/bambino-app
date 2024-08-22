@@ -1,5 +1,5 @@
 import { prisma } from './config/prisma'
-import { BOT_TOKEN } from './config/keys'
+import { BOT_TOKEN, WEB_APP_URL } from './config/keys'
 import { setStatistics } from './controllers/statistic.controller'
 import { Bot, GrammyError, HttpError, InlineKeyboard, Keyboard } from 'grammy'
 
@@ -23,7 +23,7 @@ bot.callbackQuery('use_bot', async c => {
                     {
                         text: "Открыть магазин",
                         web_app: {
-                            url: "https://5823a2b8025623.lhr.life",
+                            url: WEB_APP_URL!
                         }
                     }
                 ]
@@ -39,7 +39,7 @@ bot.callbackQuery('create_user', async c => {
         let user;
         user = await prisma.user.findFirst({ where: { user_id: c.chat?.id } })
         if(user) return await c.reply('У вас уже есть аккоунт. Вы можете использовать приложению', {
-            reply_markup: new Keyboard().webApp('Открыть магазин', 'https://2e360c0277046e.lhr.life')
+            reply_markup: new Keyboard().webApp('Открыть магазин', WEB_APP_URL!)
         })
         user = await prisma.user.create({data: {
             first_name: c.chat?.first_name!,
@@ -51,7 +51,7 @@ bot.callbackQuery('create_user', async c => {
         }})
         setStatistics('users', 1)
         await c.reply('Ваш аккоунт создано успешно. Вы можете использовать приложению', {
-            reply_markup: new Keyboard().webApp('Открыть магазин', 'https://2e360c0277046e.lhr.life')
+            reply_markup: new Keyboard().webApp('Открыть магазин', WEB_APP_URL!)
         })
     } catch (error) {
         console.log(error);

@@ -39,15 +39,15 @@ const loading = ref(false)
 const items = ref<IOrder[]>([])
 const report = reactive({
     text: '',
-    user_id: 1, //TODO:
     status: "pending",
+    user_id: store.user!.id,
     order_id: null as number | null,
 })
 
 const load_orders = async (status: string) => {
     try {
-        loading.value = true //store.user!.id||
-        const { data } = await get_my_orders(1, { status, page: page.value, limit: 20 })
+        loading.value = true
+        const { data } = await get_my_orders(store.user!.id, { status, page: page.value, limit: 20 })
         if(page.value == 1) {
             items.value = data.data
             count.value = data.count

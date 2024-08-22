@@ -1,7 +1,9 @@
 <template>
     <div class="w-full">
         <div class="flex items-center gap-2">
-            <component v-if="icon" :is="icon" class="text-primary-500 size-5" />
+            <div>
+                <component v-if="icon" :is="icon" class="text-primary-500 size-5" />
+            </div>
             <h1 class="text-sm">{{ title }}</h1>
         </div>
         <div class="mt-4 p-2 bg-gray-100 rounded-lg w-full overflow-x-auto">

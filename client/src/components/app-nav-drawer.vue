@@ -32,13 +32,16 @@
 </template>
     
 <script setup lang="ts">
+import { useStore } from '@/store'
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { admin_links } from '@/constants'
-import { BxSolidChevronRight, BxLogOut, CgChevronDown } from "@kalimahapps/vue-icons"
+import { useRoute, useRouter } from 'vue-router'
+import { BxSolidChevronRight, BxLogOut } from "@kalimahapps/vue-icons"
 
+const store = useStore()
 const route = useRoute()
 const isOpen = ref(false)
+const router = useRouter()
 const opened = ref<number|null>(null)
 
 const current_router = computed(() => {
@@ -49,7 +52,8 @@ const current_router = computed(() => {
 
 const handleLogout = () => {
     if(!confirm('Вы точно хотите выйти из аккаунта?')) return
-    // store.log_out()
+    store.set_token(null)
+    router.push('/login')
 }
 
 if(route.path.includes('/email')) opened.value = 5

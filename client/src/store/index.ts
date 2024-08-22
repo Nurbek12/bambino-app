@@ -53,7 +53,8 @@ export const useStore = defineStore('app', {
         },
         set_token(token: string | null) {
             this.token = token
-            token && cookies.set('app-token', token, { expires: new Date(new Date().getTime() + 2 * 60 * 60 * 1000) })
+            token ? cookies.set('app-token', token, { expires: new Date(new Date().getTime() + 2 * 60 * 60 * 1000) })
+                : cookies.remove('app-token')
         }
     }
 })

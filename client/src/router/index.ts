@@ -11,7 +11,6 @@ export const router = createRouter({
             { path: '/saved', component: () => import('../pages/app/saved.vue') },
             { path: '/orders', component: () => import('../pages/app/orders.vue') },
             { path: '/cart', component: () => import('../pages/app/cart.vue') },
-            { path: '/delivery', component: () => import('../pages/app/delivery.vue') },
         ], beforeEnter(_, __, next){
             const webApp = useWebApp()
             if(webApp.initData === '') return next('/login')
@@ -31,5 +30,6 @@ export const router = createRouter({
             return next()
         }},
         { path: '/login', component: () => import('../pages/admin/login.vue') },
+        { path: '/delivery', component: () => import('../pages/app/delivery.vue') },
     ],
 })

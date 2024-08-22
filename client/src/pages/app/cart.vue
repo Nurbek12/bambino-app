@@ -23,7 +23,6 @@ const alert = ref(false)
 const store = useStore()
 
 const handle_order = async () => {
-    // TODO: add alert
     await create_order({
         status: 'pending',
         total: store.get_total,

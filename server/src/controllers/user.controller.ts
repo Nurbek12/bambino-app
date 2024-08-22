@@ -39,14 +39,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
 }
 
 export const getMe = async (req: Request, res: Response) => {
-    try {
-        console.log(req.params.id);
-        
-        const user = await prisma.user.findFirst({
+    try {const user = await prisma.user.findFirst({
             where: { user_id: +req.params.id },
         })
-
-        console.log(user);
         return res.status(200).json({ data: user })
     } catch (error) {
         console.log(error)

@@ -8,9 +8,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
         if(!token) return res.status(401).json({ status: 'warning', message: 'Token not defined' })
 
-        const payload: any = jwt.verify(token, JWT_SECRET!)
+        const payload: any = jwt.verify(token, JWT_SECRET!);
 
-        req.user = payload
+        (req as any).user = payload
         
         next()
     } catch (error) {

@@ -1,9 +1,10 @@
 import { Router } from 'express'
+import { authMiddleware } from '../middlewares/auth.middleware'
 import * as UserController from '../controllers/user.controller'
 
 export default Router()
-    .get('/', UserController.getAllUsers)
+    .get('/', authMiddleware, UserController.getAllUsers)
     .get('/me/:id', UserController.getMe)
-    .post('/', UserController.createUser)
-    .put('/:id', UserController.updateUser)
-    .delete('/:id', UserController.deleteUser)
+    .post('/', authMiddleware, UserController.createUser)
+    .put('/:id', authMiddleware, UserController.updateUser)
+    .delete('/:id', authMiddleware, UserController.deleteUser)

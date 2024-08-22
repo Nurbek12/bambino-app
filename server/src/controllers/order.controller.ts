@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma'
 import { Request, Response } from 'express'
+import { setStatistics } from './statistic.controller'
 
 interface BodyOrderItems {
     product_id: number
@@ -75,7 +76,7 @@ export const getOrdersForDeliver = async (req: Request, res: Response) => {
 
 export const getMyOrders = async (req: Request, res: Response) => {
     try {
-        const where: any = { user_tg_id: +req.params.id }
+        const where: any = { user_id: +req.params.id }
         const orderBy: any = req.query.sorting || { created_at: 'desc' }
         const page = Number(req.query?.page) || 1
         const limit = Number(req.query?.limit) || 20
@@ -137,7 +138,6 @@ export const getOrder =  async (req: Request, res: Response) => {
                 }
             }
         })
-
         return res.status(200).json({ data: order })
     } catch (error) {
         console.log(error)
@@ -147,8 +147,6 @@ export const getOrder =  async (req: Request, res: Response) => {
 
 export const createOrder =  async (req: Request, res: Response) => {
     try {
-        console.log(req.body);
-        
         const order_items: any[] = [] 
         const { body_order_items, ...order_data } = req.body
         const order = await prisma.order.create({ data: order_data })
@@ -166,6 +164,7 @@ export const createOrder =  async (req: Request, res: Response) => {
             })
             order_items.push(new_order_item)
         }))
+        setStatistics('orders', 1)
         return res.status(200).json({ data: {...order, order_items} })
     } catch (error) {
         console.log(error)
@@ -175,7 +174,12 @@ export const createOrder =  async (req: Request, res: Response) => {
 
 export const updateStatusOrder =  async (req: Request, res: Response) => {
     try {
-        await prisma.order.update({ where: { id: +req.params.id }, data: { status: req.body.status } })
+        const order = await prisma.order.update({ 
+            where: { id: +req.params.id }, 
+            data: { status: req.body.status },
+        })
+
+        if(order.status === 'finish') setStatistics('amount', order.total)
 
         return res.status(200).json({ data: true })
     } catch (error) {

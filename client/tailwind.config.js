@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,vue}",
   ],
+  safelist: ["bg-blue-600", "bg-green-600", "bg-red-600", "bg-black"],
   theme: {
     container: {
       center: true,

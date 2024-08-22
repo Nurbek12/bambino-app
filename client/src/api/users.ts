@@ -10,3 +10,6 @@ export const create_user = (body: Partial<IUser>) => api.post<{data: IUser}>(`/a
 export const update_user = (id: number, body: Partial<IUser>) => api.put<{data: IUser}>(`/api/users/${id}`, body)
 
 export const delete_user = (id: number) => api.delete<{data: boolean}>(`/api/users/${id}`)
+
+
+export const login = (body: any) => api.post<{data: string}>(`/api/auth/login`, body)

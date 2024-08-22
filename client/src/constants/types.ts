@@ -78,6 +78,7 @@ export interface IOrder {
     user_id: number | null
     user: IUser
     order_items: IOrderItem[]
+    is_reported: boolean
   
     created_at: string
     updated_at: string
@@ -108,6 +109,40 @@ export interface IReview {
   
     product_id: number
     product: IProduct
+  
+    created_at: string
+    updated_at: string
+}
+
+export interface IReport {
+    id: number
+  
+    text: string
+    status: "pending" | "in progress" | "resolved"
+
+    order_id: number
+    order: IOrder
+  
+    user_id: number
+    user: IUser
+  
+    created_at: string
+    updated_at: string
+}
+
+export interface IStatistics {
+    id: number
+  
+    date: string
+
+    day: number
+    year: number
+    month: number
+  
+    users: number
+    amount: number
+    orders: number
+    reports: number
   
     created_at: string
     updated_at: string

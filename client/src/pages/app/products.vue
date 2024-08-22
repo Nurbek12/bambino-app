@@ -13,7 +13,7 @@
 
         </div>
 
-        <chip-group v-model="filters.category" :list="categories" />
+        <chip-group @update:model-value="handle_filter('category', $event)" v-model="filters.category" :list="categories" />
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <product v-for="product in products" :key="product.id" :product="product" />
@@ -26,11 +26,24 @@
         </div>
 
     </div>
-    <bottom-sheet v-model="dialog_filter">
-        <div class="overflow-auto space-y-4">
+    <bottom-sheet title="Филтрация" v-model="dialog_filter">
+        <div class="overflow-y-auto w-full flex flex-col gap-4">
             <chip-group v-model="filters.category" :list="categories" :icon="CoListFilter" title="Филтровать по категории" />
 
+            <div class="w-full">
+                <div class="flex items-center gap-2 mb-2">
+                    <IoOutlinePricetag class="size-5 text-primary-500" />
+                    <h1>Филтровать по цену</h1>
+                </div>
+                <div class="flex items-center gap-2">
+                    <app-input class="w-[50%]" type="number" v-model="filters.min_price" placeholder="Минм. цена" />
+                    <app-input class="w-[50%]" type="number" v-model="filters.max_price" placeholder="Макс. цена" />
+                </div>
+            </div>
+
             <chip-group v-model="sorting_number" :list="product_sortings" :icon="BsSortDownAlt" title="Сортитовать товаров" />
+
+            <app-btn @click="handle_products(true)" class="w-full text-white">Искать продуктов</app-btn>
         </div>
     </bottom-sheet>
 </template>
@@ -42,11 +55,12 @@ import AppBtn from '@/components/app-btn.vue'
 import { get_products } from '@/api/products'
 import { product_sortings } from '@/constants'
 import Product from '@/components/product.vue'
+import AppInput from '@/components/app-input.vue'
 import { get_categories } from '@/api/categories'
 import ChipGroup from '@/components/chip-group.vue'
 import { IProduct, ICategory } from '@/constants/types'
-import bottomSheet from '@/components/bottom-sheet.vue'
-import { AkSearch, SuFiltering, CoListFilter, BsSortDownAlt } from '@kalimahapps/vue-icons'
+import BottomSheet from '@/components/bottom-sheet.vue'
+import { AkSearch, SuFiltering, CoListFilter, BsSortDownAlt, IoOutlinePricetag } from '@kalimahapps/vue-icons'
 
 const loading = ref(false)
 const products_count = ref(0)
@@ -54,11 +68,13 @@ const dialog_filter = ref(false)
 const products = ref<IProduct[]>([])
 const categories = ref<ICategory[]>([])
 const sorting_number = ref<null|number>(null)
+
 const filters = reactive({
     page: 1,
-    price: 0,
     limit: 10,
     search: '',
+    min_price: null,
+    max_price: null,
     category: null as number | null,
 })
 const safe_filters = computed(() => {
@@ -81,6 +97,11 @@ const handle_search = lodash.debounce(async e => {
     filters.search = text
     await handle_products(true)
 }, 500)
+
+const handle_filter = (key: keyof typeof filters, value: any) => {
+    (filters[key] as any) = value
+    handle_products(true)
+}
 
 const handle_products = async (filtered?: boolean) => {
     try {

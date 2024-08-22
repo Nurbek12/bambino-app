@@ -3,7 +3,7 @@
         <transition name="sheet-content">
             <div v-if="model" @click.stop class="pointer-events-auto w-full absolute bottom-0 h-[80%] bg-white rounded-t-xl container py-2">
                 <div class="flex justify-between items-center py-2 w-full">
-                    <span>{{ props.title }}</span>
+                    <span class="text-lg">{{ props.title }}</span>
                     <app-btn @click="model=false">
                         <ClCloseMd class="text-white size-5" />
                     </app-btn>

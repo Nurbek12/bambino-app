@@ -1,8 +1,9 @@
 import { Router } from 'express'
+import { authMiddleware } from '../middlewares/auth.middleware'
 import * as ReviewController from '../controllers/review.controller'
 
 export default Router()
-    .get('/', ReviewController.getAllReviews)
+    .get('/', authMiddleware, ReviewController.getAllReviews)
     .post('/', ReviewController.createReview)
-    .put('/:id', ReviewController.updateReview)
-    .delete('/:id', ReviewController.deleteReview)
+    .put('/:id', authMiddleware, ReviewController.updateReview)
+    .delete('/:id', authMiddleware, ReviewController.deleteReview)

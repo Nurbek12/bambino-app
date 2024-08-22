@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <h1>{{ review.user.first_name }} {{ review.user.last_name }}</h1>
-                <stars :model-value="review.rate" />
+                <stars readonly :model-value="review.rate" />
             </div>
             <span class="text-sm text-gray-500">{{ new Date(review.created_at).toLocaleDateString() }}</span>
         </div>

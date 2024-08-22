@@ -8,6 +8,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
         const category: any = req.query.category || null
         const page = Number(req.query?.page) || 1
         const limit = Number(req.query?.limit) || 20
+        const min_price = Number(req.query?.min_price) || null
+        const max_price = Number(req.query?.max_price) || null
         const search = req.query.search || ''
 
         if(search) Object.assign(where, {
@@ -17,9 +19,19 @@ export const getAllProducts = async (req: Request, res: Response) => {
         })
         if(category!==null) Object.assign(where, {
             category_id: {
-                in: [category]
+                in: [+category]
             }
         })
+        if (min_price !== null || max_price !== null) {
+            where.price = {};
+            
+            if (min_price !== null)
+                Object.assign(where.price, { gte: min_price });
+            
+            if (max_price !== null)
+                Object.assign(where.price, { lte: max_price });
+        }
+        
 
         const [count,products] = await Promise.all([
             prisma.product.count({where}),
@@ -87,6 +99,7 @@ export const getProduct = async (req: Request, res: Response) => {
                             id: true,
                             rate: true,
                             text: true,
+                            created_at: true,
                             user: {
                                 select: {
                                     first_name: true,

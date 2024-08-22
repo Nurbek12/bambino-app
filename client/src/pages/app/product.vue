@@ -113,14 +113,15 @@ const init = async () => {
 }
 
 const hanle_create_review = async () => {
+    dialog.value = false
     const { data } = await create_review(review)
-    alert('Успешно отправлено') // TODO: tg alert
     product.value.rate = data.rate
     product.value.reviews = [...product.value.reviews||[], data.data]
     Object.assign(review, {
         rate: 0,
         text: '',
     })
+    alert('Успешно отправлено')
 }
 
 onBeforeMount(() => {

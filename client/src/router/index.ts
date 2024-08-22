@@ -1,3 +1,4 @@
+import { useWebApp } from 'vue-tg'
 import { useStore } from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -12,8 +13,8 @@ export const router = createRouter({
             { path: '/cart', component: () => import('../pages/app/cart.vue') },
             { path: '/delivery', component: () => import('../pages/app/delivery.vue') },
         ], beforeEnter(_, __, next){
-            // const store = useStore()
-            // if(store.user === null) return next('/welcome')
+            const webApp = useWebApp()
+            if(webApp.initData === '') return next('/login')
             return next()
         } },
         { path: '/admin', component: () => import('../pages/admin/index.vue'), children: [
@@ -23,6 +24,12 @@ export const router = createRouter({
             { path: 'orders', component: () => import('../pages/admin/orders.vue') },
             { path: 'reviews', component: () => import('../pages/admin/reviews.vue') },
             { path: 'users', component: () => import('../pages/admin/users.vue') },
-        ]},
+            { path: 'reports', component: () => import('../pages/admin/reports.vue') },
+        ], beforeEnter(_, __, next){
+            const store = useStore()
+            if(!store.is_authencated) return next('/login')
+            return next()
+        }},
+        { path: '/login', component: () => import('../pages/admin/login.vue') },
     ],
 })

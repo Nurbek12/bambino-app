@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import cookies from 'js-cookie'
+import { defineStore } from 'pinia'
 import { IProduct, IUser } from '../constants/types'
 
 export const useStore = defineStore('app', {
@@ -50,6 +50,10 @@ export const useStore = defineStore('app', {
         set_user(user: IUser) {
             this.user = user
             localStorage.setItem('app-user', JSON.stringify(user))
+        },
+        set_token(token: string | null) {
+            this.token = token
+            token && cookies.set('app-token', token, { expires: new Date(new Date().getTime() + 2 * 60 * 60 * 1000) })
         }
     }
 })

@@ -13,6 +13,9 @@
             <template #table-item-created_at="{tableItem}">
                 <span class="text-xs">{{ new Date(tableItem.created_at!).toLocaleString() }}</span>
             </template>
+            <template #table-item-user="{tableItem}">
+                <span class="text-xs">{{ tableItem.user?.first_name }} {{ tableItem.user?.last_name }}</span>
+            </template>
             <template #table-item-actions="{tableItem,index}">
                 <div class="flex gap-1">
                     <app-btn @click="deleteItem(tableItem.id!, index)">
@@ -38,10 +41,9 @@ const items = ref<IReview[]>([])
 
 const headers = [
     { name: "ID", value: "id", sortable: true, balancedText: false, custom: false },
-    { name: "Имя", value: "user.first_name", sortable: true, balancedText: false, custom: false },
-    { name: "Фамилия", value: "user.last_name", sortable: true, balancedText: true, custom: false },
+    { name: "Имя и Фамилия", value: "user", sortable: false, balancedText: false, custom: true },
     { name: "Сообщения", value: "text", sortable: false, balancedText: false, custom: false },
-    { name: "Бал", value: "rate", sortable: false, balancedText: false, custom: false },
+    { name: "Бал", value: "rate", sortable: true, balancedText: false, custom: false },
     { name: "Добавлено", value: "created_at", sortable: true, balancedText: false, custom: true },
     { name: "Управлять", value: "actions", sortable: false, balancedText: false, custom: true },
 ]

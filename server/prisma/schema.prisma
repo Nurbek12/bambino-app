@@ -27,6 +27,7 @@ model User {
 
   orders  Order[]
   reviews Review[]
+  reports Report[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -91,8 +92,10 @@ model Order {
   user_tg_id  Int?
   user_id     Int
   geolocation String?
+  is_reported Boolean @default(false)
   user        User        @relation(fields: [user_id], references: [id])
   order_items OrderItem[]
+  order_reports Report[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -125,6 +128,49 @@ model Review {
 
   product_id Int
   product    Product @relation(fields: [product_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Report {
+  id Int @id @default(autoincrement())
+
+  text String
+  status String
+
+  order_id Int
+  order    Order @relation(fields: [order_id], references: [id])
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Admin {
+  id Int @id @default(autoincrement())
+
+  login String
+  password String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Statistics {
+  id Int @id @default(autoincrement())
+
+  date String @unique
+  day Int
+  month Int
+  year Int
+
+  amount Int
+  orders Int
+  users Int
+  reports Int
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -7,10 +7,7 @@
         <div v-show="store.get_cart.length===0" class="flex justify-center items-center">
             <h1 class="text-gray-500">Нет продуктов</h1>
         </div>
-        <pre>
-            {{ store.get_user }}
-        </pre>
-        <Alert message="Покупка успешно создано!" v-model="alert"  />
+        <Alert message="Покупка успешно создано!" v-if="alert"  />
     </div>
 </template>
 
@@ -31,7 +28,7 @@ const handle_order = async () => {
         status: 'pending',
         total: store.get_total,
         user_id: store.user?.id,
-        order_items: store.get_cart.map(({id, quantity}) => ({product_id: id, quantity})),
+        body_order_items: store.get_cart.map(({id, quantity}) => ({product_id: id, quantity})),
     })
     alert.value = true
     store.cart = []

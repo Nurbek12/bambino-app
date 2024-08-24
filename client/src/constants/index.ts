@@ -41,9 +41,9 @@ export const order_statuses = {
 }
 
 export const order_status_items = {
-    "pending": ["В ожидание", "text-blue-500"],
-    "finish": ["Доставлено", "text-green-600"],
-    "canceled": ["Отменено", "text-amber-600"],
+  "pending": ["В ожидание", "text-blue-500"],
+  "finish": ["Доставлено", "text-green-600"],
+  "canceled": ["Отменено", "text-gray-600"],
 }
 
 export const report_statuses = {

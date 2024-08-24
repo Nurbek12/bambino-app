@@ -76,9 +76,11 @@
             <app-btn class="w-full text-white">Отправить</app-btn>
         </form>
     </app-dialog>
+    <Alert message="Успешно отправлено!" v-if="show_alert" />
 </template>
 
 <script setup lang="ts">
+import { Alert } from 'vue-tg'
 import { baseURL } from '@/api'
 import { useStore } from '@/store'
 import Stars from '@/components/stars.vue'
@@ -98,6 +100,7 @@ const route = useRoute()
 const dialog = ref(false)
 const router = useRouter()
 const current_image = ref(0)
+const show_alert = ref(false)
 const review = reactive<Partial<IReview>>({
     rate: 0,
     text: '',
@@ -121,7 +124,10 @@ const hanle_create_review = async () => {
         rate: 0,
         text: '',
     })
-    alert('Успешно отправлено')
+    show_alert.value = true
+    setTimeout(() => {
+        show_alert.value = false
+    }, 3000)
 }
 
 onBeforeMount(() => {

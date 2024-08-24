@@ -1,145 +1,85 @@
 <template>
     <div class="h-screen w-full flex flex-col gap-2 relative">
-        <div class="w-full flex-1" v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0">
-            <mgl-map
-                :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
-                :center="(center as any)"
-                v-model:zoom="zoom"
-                @map:load="loadMap">
-                <mgl-marker :coordinates="(courierPosition as any)" color="red">
-                    <mgl-popup>
-                        Курьер - Это вы
-                    </mgl-popup>
-                </mgl-marker>
-                <mgl-navigation-control />
-                <mgl-marker v-for="order in orders" :coordinates="[order.longitude, order.latitude]" :key="order.id" :color="{'pending':'blue','finish':'green','canceled':'amber'}[order.status]">
-                    <mgl-popup>
-                        <div>
-                            {{ order.user?.first_name }} {{ order.user?.last_name }} - {{ order.user?.phone }}
-                        </div>
-                        <div v-show="nearbyOrderId===order.id">
-                            <app-btn class="w-full text-white">Заказ доставлен</app-btn>
-                        </div>
-                    </mgl-popup>
-                </mgl-marker>
-            </mgl-map>
-        </div>
-        <div class="container w-full pb-4 py-2">
-            <app-btn class="w-full text-white">Посмотреть заказов</app-btn>
-        </div>
+      <div class="w-full flex-1">
+        <mgl-map
+          v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0"
+          :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
+          :center="(center as any)"
+          v-model:zoom="zoom"
+          @map:load="loadMap">
+          <mgl-marker :coordinates="(courierPosition as any)" color="red">
+            <mgl-popup>
+              Курьер - Это вы
+            </mgl-popup>
+          </mgl-marker>
+          <mgl-navigation-control />
+          <mgl-marker v-for="order,i in orders" :coordinates="[order.longitude, order.latitude]" :key="order.id" :color="{'pending':'blue','finish':'green','canceled':'gray'}[order.status]">
+            <mgl-popup>
+              <div>
+                {{ order.user?.first_name }} {{ order.user?.last_name }} - {{ order.user?.phone }}
+              </div>
+              <div class="flex items-center gap-2 mt-2">
+                <app-btn @click="delivered(order.id, i, 'finish')" class="text-sm w-full text-white">Заказ доставлен</app-btn>
+                <!-- <app-btn class="text-sm" @click="delivered(order.id, i, 'canceled')" class="w-full text-white">Заказ доставлен</app-btn> -->
+              </div>
+            </mgl-popup>
+          </mgl-marker>
+        </mgl-map>
+      </div>
+      <div class="container w-full pb-4 py-2">
+        <app-btn @click="sheet=true" class="w-full text-white">Посмотреть заказов</app-btn>
+      </div>
     </div>
+    
+    <bottom-sheet title="Покупки" v-model="sheet">
+      <div class="h-full overflow-y-auto">
+        <div class="pb-16">
+          <div class="text-center text-gray-700" v-show="orders.length===0">Нет покупки</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <order v-for="order,i in orders" :key="i" :order="order" hide_report />
+          </div>
+        </div>
+      </div>
+    </bottom-sheet>
 </template>
 
 <script setup lang="ts">
 import 'maplibre-gl/dist/maplibre-gl.css'
 
-import polyline from '@mapbox/polyline'
 import { Marker } from 'maplibre-gl'
+import polyline from '@mapbox/polyline'
+import Order from '@/components/order.vue'
 import { IOrder } from '@/constants/types'
 import AppBtn from '@/components/app-btn.vue'
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed } from 'vue'
+import { get_delivery, update_order } from '@/api/orders'
+import BottomSheet from '@/components/bottom-sheet.vue'
 import { MglMap, MglNavigationControl, MglMarker, MglPopup } from '@indoorequal/vue-maplibre-gl'
 
 const zoom = ref(14)
+const sheet = ref(false)
+const orders = ref<IOrder[]>([])
 const center = ref<number[]>([0, 0])
 const courierPosition = ref<number[]>([0, 0])
-const orders = ref<IOrder[]>([
-  {
-    "id": 1,
-    "status": "pending",
-    "total": 28500,
-    "user_tg_id": null,
-    "user_id": 1,
-    "address": null,
-    "geolocation": null,
-    "is_reported": true,
-    "latitude": 40.028909,
-    "longitude": 64.825715,
-    "created_at": "2024-08-23T13:29:41.800Z",
-    "updated_at": "2024-08-23T13:49:24.078Z",
-    "user": {
-      "id": 1,
-      "first_name": "Nurbek",
-      "last_name": "",
-      "address": "",
-      "geolocation": null,
-      "phone": "998939060512"
-    }
-  },
-  {
-    "id": 2,
-    "status": "finish",
-    "total": 9500,
-    "user_tg_id": null,
-    "user_id": 1,
-    "address": null,
-    "geolocation": null,
-    "is_reported": false,
-    "latitude": 40.034787,
-    "longitude": 64.83785,
-    "created_at": "2024-08-23T13:45:44.767Z",
-    "updated_at": "2024-08-23T13:48:05.042Z",
-    "user": {
-      "id": 1,
-      "first_name": "Nurbek",
-      "last_name": "",
-      "address": "",
-      "geolocation": null,
-      "phone": "998939060512"
-    }
-  },
-  {
-    "id": 3,
-    "status": "canceled",
-    "total": 47500,
-    "user_tg_id": null,
-    "user_id": 1,
-    "address": null,
-    "geolocation": null,
-    "is_reported": false,
-    "latitude": 40.028856,
-    "longitude": 64.832323,
-    "created_at": "2024-08-23T13:45:51.918Z",
-    "updated_at": "2024-08-23T13:48:05.042Z",
-    "user": {
-      "id": 1,
-      "first_name": "Nurbek",
-      "last_name": "",
-      "address": "",
-      "geolocation": null,
-      "phone": "998939060512"
-    }
-  },
-  {
-    "id": 4,
-    "status": "pending",
-    "total": 19000,
-    "user_tg_id": null,
-    "user_id": 1,
-    "address": null,
-    "geolocation": null,
-    "is_reported": false,
-    "latitude": 40.025437,
-    "longitude": 64.827716,
-    "created_at": "2024-08-23T13:45:57.323Z",
-    "updated_at": "2024-08-23T13:48:05.042Z",
-    "user": {
-      "id": 1,
-      "first_name": "Nurbek",
-      "last_name": "",
-      "address": "",
-      "geolocation": null,
-      "phone": "998939060512"
-    }
-  }
-] as any)
+
+const getOrders = async () => {
+  const { data } = await get_delivery()
+  orders.value = data.data
+}
+
+const delivered = async (id: number, index: number, status: 'finish' | 'canceled') => {
+  if(!confirm('Вы доставили этот заказ?')) return
+  await update_order(id, { status })
+  orders.value[index].status = status
+}
 
 const sortedOrders = computed(() => {
-    return orders.value.sort((a, b) => {
-        const distanceA = haversineDistance(courierPosition.value[0], courierPosition.value[1], a.latitude, a.longitude);
-        const distanceB = haversineDistance(courierPosition.value[0], courierPosition.value[1], b.latitude, b.longitude);
-        return distanceA - distanceB;
-    });
+  if(orders.value.length === 0) return [] 
+  return orders.value.sort((a, b) => {
+      const distanceA = haversineDistance(courierPosition.value[0], courierPosition.value[1], a.latitude, a.longitude);
+      const distanceB = haversineDistance(courierPosition.value[0], courierPosition.value[1], b.latitude, b.longitude);
+      return distanceA - distanceB;
+  });
 })
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -156,72 +96,74 @@ const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 const loadMap = ({map}: any) => {
-      let url1 = new URL("https://maptoolkit.p.rapidapi.com/route");
-      url1.searchParams.append("point", `${courierPosition.value[1]},${courierPosition.value[0]}`);
-      sortedOrders.value.map(o => {
-        url1.searchParams.append("point", `${o.latitude},${o.longitude}`);
-      })
-        url1.searchParams.append("routeType", "car");
-      url1.searchParams.append("rapidapi-key", "2d5d8ea9ccmsh08eb851594888f2p191856jsn29dbe103be34");
-      fetch(url1)
-        .then((r) => r.json())
-        .then((route) => {
-            let path = route.paths[0]
-            let coordinates = polyline.decode(path.points).map((c: any) => c.reverse());
-            map.addLayer({
-                id: "route",
-                type: "line",
-                source: {
-                    type: "geojson",
-                    data: {
-                    type: "Feature",
-                        geometry: {
-                            type: "LineString",
-                            coordinates: coordinates,
-                        },
+  if(orders.value.length === 0) return 
+  let url1 = new URL("https://maptoolkit.p.rapidapi.com/route");
+  url1.searchParams.append("point", `${courierPosition.value[1]},${courierPosition.value[0]}`);
+  sortedOrders.value.map(o => {
+    url1.searchParams.append("point", `${o.latitude},${o.longitude}`);
+  })
+    url1.searchParams.append("routeType", "car");
+  url1.searchParams.append("rapidapi-key", "2d5d8ea9ccmsh08eb851594888f2p191856jsn29dbe103be34");
+  fetch(url1)
+    .then((r) => r.json())
+    .then((route) => {
+        let path = route.paths[0]
+        let coordinates = polyline.decode(path.points).map((c: any) => c.reverse());
+        map.addLayer({
+            id: "route",
+            type: "line",
+            source: {
+                type: "geojson",
+                data: {
+                type: "Feature",
+                    geometry: {
+                        type: "LineString",
+                        coordinates: coordinates,
                     },
                 },
-                layout: {
-                    "line-join": "round",
-                    "line-cap": "round",
-                },
-                paint: {
-                    "line-color": "#2a3561",
-                    "line-width": 5,
-                },
-            });
-            // Add instruction markers with popup to map
-            path.instructions.forEach((instruction: any) => {
-                let $img = document.createElement("img");
-                $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/route-via.svg";
-                $img.width = 12;
-                $img.height = 12;
-                $img.style["cursor"] = "pointer";
-                new Marker({
-                    element: $img,
-                    anchor: "center",
-                })
-                .setLngLat(instruction.coordinate.reverse())
-                .addTo(map)
-            });
-            
+            },
+            layout: {
+                "line-join": "round",
+                "line-cap": "round",
+            },
+            paint: {
+                "line-color": "#2a3561",
+                "line-width": 5,
+            },
+        });
+        // Add instruction markers with popup to map
+        path.instructions.forEach((instruction: any) => {
             let $img = document.createElement("img");
-            $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/marker.svg";
-            $img.width = 29;
-            $img.height = 30;
+            $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/route-via.svg";
+            $img.width = 12;
+            $img.height = 12;
+            $img.style["cursor"] = "pointer";
             new Marker({
                 element: $img,
-                anchor: "bottom",
+                anchor: "center",
             })
-            .setLngLat(coordinates[0])
-            .addTo(map);
-            
-        }).catch(error => {
-        console.log(error)
-    })
+            .setLngLat(instruction.coordinate.reverse())
+            .addTo(map)
+        });
+        
+        let $img = document.createElement("img");
+        $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/marker.svg";
+        $img.width = 29;
+        $img.height = 30;
+        new Marker({
+            element: $img,
+            anchor: "bottom",
+        })
+        .setLngLat(coordinates[0])
+        .addTo(map);
+        
+    }).catch(error => {
+    console.log(error)
+  })
 }
 
 const nearbyOrderId = computed(() => {
+  if(orders.value.length === 0) return null 
   for (const order of orders.value) {
   const distance = haversineDistance(courierPosition.value[0], courierPosition.value[1], order.latitude, order.longitude);
     if (distance <= 0.01) {
@@ -231,7 +173,9 @@ const nearbyOrderId = computed(() => {
   return null;
 })
 
-onMounted(() => {
+onMounted(async () => {
+  await getOrders()
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {

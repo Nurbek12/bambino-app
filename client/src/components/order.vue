@@ -10,6 +10,10 @@
                 </span>
             </h2>
             <h2>Сумма заказа: {{ order?.total || 0 }} сумов</h2>
+            <template v-if="order!.user">
+                <h2>Клиент: {{ order!.user.first_name }} {{ order!.user.last_name }}</h2>
+                <h2>Телефон: <a class="text-primary-500" :href="`tel:${order!.user.phone}`">{{ order!.user.phone }}</a></h2>
+            </template>
         </div>
         <div v-if="open" class="bg-gray-300 my-2 py-2 px-3 rounded-xl">
             <h2 class="text-sm">Продукты заказа: {{ items?.length || 0 }}</h2>

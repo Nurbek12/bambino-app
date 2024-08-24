@@ -16,9 +16,11 @@
             <app-btn class="w-full text-white">Отправить</app-btn>
         </form>
     </app-dialog>
+    <Alert message="Покупка успешно создано!" v-if="show_alert" />
 </template>
 
 <script setup lang="ts">
+import { Alert } from 'vue-tg'
 import { useStore } from '@/store'
 import { ref, reactive } from 'vue'
 import { IOrder } from '@/constants/types'
@@ -34,6 +36,7 @@ import AppTextarea from '@/components/app-textarea.vue'
 const page = ref(1)
 const count = ref(0)
 const status = ref('')
+const show_alert = ref(false)
 const store = useStore()
 const loading = ref(false)
 const items = ref<IOrder[]>([])
@@ -66,7 +69,10 @@ const hanle_create_report = async () => {
         const ind = items.value.findIndex(o => o.id === report.order_id)
         items.value[ind].is_reported = true
         await create_report(report as any)
-        alert('Репорт успешно отправлено!')
+        show_alert.value = true
+        setTimeout(() => {
+            show_alert.value = false
+        }, 3000)
     } catch (error) {
         console.log(error)
     } finally {

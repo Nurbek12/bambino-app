@@ -11,6 +11,6 @@ export const get_delivery = () => api.get<{data: IOrder[], count: number}>(`/api
 
 export const create_order = (body: any) => api.post<{data: IOrder}>(`/api/orders`, body)
 
-export const update_order = (id: number, body: any) => api.patch<{data: IOrder}>(`/api/orders`, body)
+export const update_order = (id: number, body: any) => api.patch<{data: IOrder}>(`/api/orders/${id}`, body)
 
 export const delete_order = (id: number) => api.delete<{data: boolean}>(`/api/orders/${id}`)

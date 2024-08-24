@@ -3,7 +3,7 @@
         <div class="w-full flex-1" v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0">
             <mgl-map
                 :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
-                :center="(courierPosition as any)"
+                :center="(center as any)"
                 v-model:zoom="zoom"
                 @map:load="loadMap">
                 <mgl-marker :coordinates="(courierPosition as any)" color="red">
@@ -41,6 +41,7 @@ import { onMounted, ref, computed } from 'vue';
 import { MglMap, MglNavigationControl, MglMarker, MglPopup } from '@indoorequal/vue-maplibre-gl'
 
 const zoom = ref(14)
+const center = ref<number[]>([0, 0])
 const courierPosition = ref<number[]>([0, 0])
 const orders = ref<IOrder[]>([
   {
@@ -221,34 +222,35 @@ const loadMap = ({map}: any) => {
 }
 
 const nearbyOrderId = computed(() => {
-    for (const order of orders.value) {
-    const distance = haversineDistance(courierPosition.value[0], courierPosition.value[1], order.latitude, order.longitude);
-    if (distance <= 0.005) {
-        return order.id;
+  for (const order of orders.value) {
+  const distance = haversineDistance(courierPosition.value[0], courierPosition.value[1], order.latitude, order.longitude);
+    if (distance <= 0.01) {
+      return order.id;
     }
-    }
-    return null;
+  }
+  return null;
 })
 
 onMounted(() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                courierPosition.value = [position.coords.longitude, position.coords.latitude];
-            },
-            (error) => {
-                console.error('Error getting geolocation:', error);
-            }
-        )
-
-        navigator.geolocation.watchPosition(
-          (position) => {
-            courierPosition.value = [position.coords.longitude, position.coords.latitude];
-          },
-          (error) => {
-            console.error('Error watching geolocation:', error);
-          }
-        )
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        courierPosition.value = [position.coords.longitude, position.coords.latitude];
+        center.value = [position.coords.longitude, position.coords.latitude];
+      },
+      (error) => {
+        console.error('Error getting geolocation:', error);
       }
+    )
+
+    navigator.geolocation.watchPosition(
+      (position) => {
+        courierPosition.value = [position.coords.longitude, position.coords.latitude];
+      },
+      (error) => {
+        console.error('Error watching geolocation:', error);
+      }
+    )
+  }
 });
 </script>

@@ -20,10 +20,11 @@ export const login =  async (req: Request, res: Response) => {
     }
 }
 
-const createAdmin = async (login: string, password: string) => {
+const createAdmin = async (login: string, password: string, role: 'admin' | 'courier' = 'courier') => {
     try {
         await prisma.admin.create({data: {
             login: login,
+            role,
             password: await bcrypt.hash(password, 10)
         }})
         console.log("Админ создан!")

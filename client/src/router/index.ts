@@ -30,6 +30,6 @@ export const router = createRouter({
             return next()
         }},
         { path: '/login', component: () => import('../pages/admin/login.vue') },
-        { path: '/delivery', component: () => import('../pages/app/delivery.vue') },
+        { path: '/delivery', component: () => import('../pages/deliver/index.vue') },
     ],
 })

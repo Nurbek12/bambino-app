@@ -19,9 +19,11 @@ model User {
   first_name  String
   last_name   String
   address     String
-  user_id     Int
+  user_tg_id  String?
   phone       String
   geolocation String?
+  latitude Float?
+  longitude Float?
 
   count_of_orders Int
 
@@ -91,11 +93,14 @@ model Order {
   total       Int
   user_tg_id  Int?
   user_id     Int
+  address String?
   geolocation String?
   is_reported Boolean @default(false)
   user        User        @relation(fields: [user_id], references: [id])
   order_items OrderItem[]
   order_reports Report[]
+  latitude Float?
+  longitude Float?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -154,6 +159,7 @@ model Admin {
 
   login String
   password String
+  role String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

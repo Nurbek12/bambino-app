@@ -7,7 +7,6 @@ import { PORT } from './config/keys'
 
 const app = express()
 
-
 app
     .use(cors())
     .use(express.json())

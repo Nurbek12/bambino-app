@@ -15,19 +15,21 @@
 
         <div class="grid grid-cols-1">
             <div class="py-2 px-3 bg-white border rounded-xl flex gap-4">
-                <app-chart title="Количество продажы, пользователи, репорты за последние 30 дней (fake data)" :icon="BxBarChartAlt" :data="statistic_data" />
+                <app-chart title="Количество продажы, пользователи, репорты за последние 30 дней (fake data)" :icon="BxBarChartAlt" :data="data" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { statistic_cards, statistic_data } from '@/constants'
+import { ref, reactive } from 'vue'
+import { statistic_cards } from '@/constants'
+import { IStatistics } from '@/constants/types'
 import AppChart from '@/components/app-chart.vue'
 import { BxBarChartAlt } from '@kalimahapps/vue-icons'
-import { get_statistics_count } from '@/api/statistics'
+import { get_statistics_count, get_statistics } from '@/api/statistics'
 
+const data = ref<IStatistics[]>([])
 const counts = reactive({
     users_count: 0,
     orders_count: 0,
@@ -37,10 +39,12 @@ const counts = reactive({
 
 const init = async () => {
     try {
-        const [c] = await Promise.all([
-            get_statistics_count()
+        const [c,s] = await Promise.all([
+            get_statistics_count(),
+            get_statistics()
         ])
 
+        data.value = s.data.data
         Object.assign(counts, c.data.data)
     } catch (error) {
         console.log(error)

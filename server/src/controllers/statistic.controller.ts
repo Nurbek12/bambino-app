@@ -27,6 +27,31 @@ export const getStatisticsCounts = async (_: Request, res: Response) => {
     }
 }
 
+export const getStatistics = async (req: Request, res: Response) => {
+    try {
+        const currentDate = new Date();
+
+        const firstDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+
+        const lastDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+
+        const stcs = await prisma.statistics.findMany({
+            where: {
+                created_at: {
+                    gte: firstDate,
+                    lte: lastDate,
+                },
+            },
+        })
+
+        return res.status(200).json({ data: stcs })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 'error', message: 'Interlan server error.' })
+    }
+}
+
+
 export const setStatistics = async (key: keyof typeof prisma.statistics.fields, value: number) => {
     const d = new Date()
     const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '-')

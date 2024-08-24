@@ -13,20 +13,23 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Alert } from 'vue-tg'
 import { useStore } from '@/store'
+import { Alert, useWebApp } from 'vue-tg'
 import { create_order } from '@/api/orders'
 import AppBtn from '@/components/app-btn.vue'
 import CartProduct from '@/components/cart-product.vue'
 
 const alert = ref(false)
 const store = useStore()
+const webApp = useWebApp()
 
 const handle_order = async () => {
     await create_order({
         status: 'pending',
         total: store.get_total,
         user_id: store.user?.id,
+        latitude: store.user?.latitude,
+        longitude: store.user?.longitude,
         body_order_items: store.get_cart.map(({id, quantity}) => ({product_id: id, quantity})),
     })
     alert.value = true
@@ -34,6 +37,6 @@ const handle_order = async () => {
     localStorage.removeItem('app-cart')
     setTimeout(() => {
         alert.value = false
-    }, 3000);
+    }, 3000)
 }
 </script>

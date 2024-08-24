@@ -40,7 +40,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getMe = async (req: Request, res: Response) => {
     try {const user = await prisma.user.findFirst({
-            where: { user_id: +req.params.id },
+            where: { user_tg_id: ''+req.params.id },
         })
         return res.status(200).json({ data: user })
     } catch (error) {

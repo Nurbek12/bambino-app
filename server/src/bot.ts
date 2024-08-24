@@ -4,18 +4,24 @@ import { setStatistics } from './controllers/statistic.controller'
 import { Bot, GrammyError, HttpError, InlineKeyboard, Keyboard } from 'grammy'
 
 const bot = new Bot(BOT_TOKEN!)
+const register_users = new Map<number, { phone?: string, address?: string, latitude?: number, longitude?: number  }>()
 
 bot.command('start', async c => {
     await c.reply('Добро пожаловать в бот', {
-        reply_markup: new InlineKeyboard().text('Использовать приложению', 'use_bot')
+        reply_markup: new InlineKeyboard().text('Использовать приложению', 'use_bot').webApp('Delivery', 'https://be2f2d27a5196e.lhr.life/delivery')
     })
 })
 
 bot.callbackQuery('use_bot', async c => {
-    const user = await prisma.user.findFirst({ where: { user_id: c.chat?.id } })
-    if(user === null) await c.reply('У вас нет аккоунта', {
-        reply_markup: new InlineKeyboard().text('Создать аккоунт', 'create_user')
-    })
+    await c.answerCallbackQuery()
+
+    const user = await prisma.user.findFirst({ where: { user_tg_id: '' + c.chat?.id } })
+    if(user === null) {
+        await c.reply('У вас нет аккоунта', {
+            reply_markup: new InlineKeyboard().text('Создать аккоунт', 'create_user')
+        })
+        return
+    }
     await c.reply('Вы можете использовать приложению', {
         reply_markup: {
             inline_keyboard: [
@@ -31,33 +37,45 @@ bot.callbackQuery('use_bot', async c => {
             resize_keyboard: true
         }
     })
-    await c.answerCallbackQuery()
 })
 
 bot.callbackQuery('create_user', async c => {
     try {
-        let user;
-        user = await prisma.user.findFirst({ where: { user_id: c.chat?.id } })
-        if(user) return await c.reply('У вас уже есть аккоунт. Вы можете использовать приложению', {
-            reply_markup: new Keyboard().webApp('Открыть магазин', WEB_APP_URL!)
-        })
-        user = await prisma.user.create({data: {
-            first_name: c.chat?.first_name!,
-            last_name: c.chat?.last_name! || '',
-            user_id: c.chat?.id!,
-            count_of_orders: 0,
-            address: "",
-            phone: "",
-        }})
-        setStatistics('users', 1)
-        await c.reply('Ваш аккоунт создано успешно. Вы можете использовать приложению', {
-            reply_markup: new Keyboard().webApp('Открыть магазин', WEB_APP_URL!)
-        })
-    } catch (error) {
-        console.log(error);
-    } finally {
         await c.answerCallbackQuery()
+
+        await handleCreateUser(c)
+    } catch (error) {
+        console.log(error)
     }
+})
+
+bot.on(':location', async (c) => {
+    try {
+        const user = register_users.get(c.chat.id)
+        if(!user) return
+        user.latitude = c.msg.location.latitude
+        user.longitude = c.msg.location.longitude
+        
+        await handleCreateUser(c)
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+bot.on(':contact', async (c) => {
+    try {
+        const user = register_users.get(c.chat.id)
+        if(!user) return
+        user.phone = c.msg.contact.phone_number
+        
+        await handleCreateUser(c)
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+bot.on(':web_app_data', async (c) => {
+    console.log(c.msg);
 })
 
 bot.catch((err) => {
@@ -66,5 +84,56 @@ bot.catch((err) => {
     else if(err.error instanceof HttpError) console.log('Could not contact Telegram')
     else console.log('Unknown error')
 })
+
+const handleCreateUser = async (c: any) => {
+    try {
+        let fuser;
+        fuser = await prisma.user.findFirst({ where: { user_tg_id: '' + c.chat?.id } })
+        if(fuser) return await c.reply('У вас уже есть аккоунт. Вы можете использовать приложению', {
+            reply_markup: new InlineKeyboard().webApp('Открыть магазин', WEB_APP_URL!)
+        })
+
+        let user = register_users.get(c.chat?.id!)
+
+        if(!user) {
+            register_users.set(c.chat?.id!, {})
+            user = register_users.get(c.chat?.id!)
+        }
+
+        if(!user?.longitude || !user?.latitude) {
+            await c.reply('Нам нужно ваше местоположения и телефон', {
+                reply_markup: new Keyboard().requestLocation('Поделиться c местоположением').resized(),
+            })
+            return
+        }
+        
+        if(!user?.phone) {
+            await c.reply('Нам нужно ваше телефон', {
+                reply_markup: new Keyboard().requestContact('Поделиться c телефоном').resized(),
+            })
+            return
+        }
+        
+        await prisma.user.create({data: {
+            first_name: c.chat?.first_name!,
+            last_name: c.chat?.last_name! || '',
+            user_tg_id: ''+c.chat?.id!,
+            count_of_orders: 0,
+            address: "",
+            phone: user.phone,
+            latitude: user.latitude,
+            longitude: user.longitude
+        }})
+        
+        setStatistics('users', 1)
+        register_users.delete(c.chat.id)
+
+        await c.reply('Ваш аккоунт создано успешно!', {
+            reply_markup: new InlineKeyboard().webApp('Открыть магазин', WEB_APP_URL!)
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 export default bot

@@ -7,6 +7,8 @@ export interface IUser {
     address: string
     phone: string
     geolocation?: string
+    latitude: number
+    longitude: number
 
     count_of_orders?: number
   
@@ -76,9 +78,13 @@ export interface IOrder {
     status: "pending" | "finish" | "canceled"
     total: number
     user_id: number | null
+    user_tg_id: string | null
     user: IUser
     order_items: IOrderItem[]
     is_reported: boolean
+    
+    latitude: number
+    longitude: number
   
     created_at: string
     updated_at: string

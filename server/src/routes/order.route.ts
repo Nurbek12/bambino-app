@@ -4,7 +4,7 @@ import * as OrderController from '../controllers/order.controller'
 
 export default Router()
     .get('/', authMiddleware, OrderController.getAllOrders)
-    .get('/id/:id', authMiddleware, OrderController.getOrder)
+    .get('/id/:id', OrderController.getOrder)
     .get('/my/:id', OrderController.getMyOrders)
     .get('/delivery', OrderController.getOrdersForDeliver)
     .post('/', OrderController.createOrder)

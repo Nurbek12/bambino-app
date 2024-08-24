@@ -131,10 +131,11 @@ const handle_remove_image = async (id: number, index: number) => {
     items.value[itemIndex.value!].images.splice(index, 1)
 }
 
-const handle_add_image = async (id: number, index: number) => {
+const handle_add_image = async (id: number) => {
     const formdata = new FormData()
     images.value.map(img => formdata.append('image', img))
     const { data } = await add_image(id, formdata)
+    const index = items.value.findIndex(p => p.id === id)
     items.value[index].images = [...items.value[index].images||[], ...data.data]
 }
 
@@ -153,6 +154,7 @@ const update = async (index: number, body: any) => {
 
 const save = async () => {
     try {
+        delete item.category
         createLoading.value = true
         let res_product
 
@@ -162,7 +164,7 @@ const save = async () => {
             res_product = await add(item)
 
         images.value.length > 0 &&
-            await handle_add_image(res_product.id, itemIndex.value!)
+            handle_add_image(res_product.id)
 
         close()
     } catch (error: any) {
@@ -204,6 +206,8 @@ const close = () => {
         stock_count: null,
         category_id: undefined,
     })
+    delete item.category
+    delete item.images
     images.value = []
     dialog.value = false
     itemIndex.value = null

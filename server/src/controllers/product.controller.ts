@@ -120,7 +120,7 @@ export const getProduct = async (req: Request, res: Response) => {
 
 export const createProduct =  async (req: Request, res: Response) => {
     try {
-        const product = await prisma.product.create({ data: req.body })
+        const product = await prisma.product.create({ data: req.body, include: { category: { select: { name: true, id: true } } } })
 
         return res.status(200).json({ data: product })
     } catch (error) {
@@ -172,6 +172,7 @@ export const updateProduct =  async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
+        await prisma.image.deleteMany({ where: { product_id: +req.params.id } })
         await prisma.product.delete({ where: { id: +req.params.id } })
 
         return res.status(200).json({ data: true })

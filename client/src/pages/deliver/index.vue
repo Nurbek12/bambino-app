@@ -1,6 +1,6 @@
 <template>
     <div class="h-screen w-full flex flex-col gap-2 relative">
-        <div class="w-full flex-1">
+        <div class="w-full flex-1" v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0">
             <mgl-map
                 :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
                 :center="(courierPosition as any)"
@@ -41,7 +41,7 @@ import { onMounted, ref, computed } from 'vue';
 import { MglMap, MglNavigationControl, MglMarker, MglPopup } from '@indoorequal/vue-maplibre-gl'
 
 const zoom = ref(14)
-const courierPosition = ref<number[]>([66.9653502, 39.6507963])
+const courierPosition = ref<number[]>([0, 0])
 const orders = ref<IOrder[]>([
   {
     "id": 1,

@@ -19,6 +19,6 @@ app
     .get('*', async (_, res) => res.sendFile(path.join(__dirname, '..', '..', 'client', 'dist', 'index.html')))
 
     .listen(PORT, () => {
-        // bot.start()
+        bot.start()
         console.log('Server started...')
     })

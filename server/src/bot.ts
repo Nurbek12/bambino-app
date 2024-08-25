@@ -18,6 +18,12 @@ bot.command('delivery', async c => {
     })
 })
 
+bot.command('admin', async c => {
+    await c.reply('Приложения для админа', {
+        reply_markup: new InlineKeyboard().webApp('Использовать приложению', WEB_APP_URL+'/admin')
+    })
+})
+
 bot.callbackQuery('use_bot', async c => {
     await c.answerCallbackQuery()
 

@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { baseURL } from '@/api'
 import AppBtn from '@/components/app-btn.vue'
 import { human_file_size } from '@/constants'
 import { MdDelete } from '@kalimahapps/vue-icons'
@@ -31,8 +30,6 @@ const props = defineProps<{
 }>()
 
 const getImage = (img: any) => {
-    return props.is_file ?
-        URL.createObjectURL(img) :
-        `${baseURL}/${img.url}`
+    return props.is_file ? URL.createObjectURL(img):img.url
 }
 </script>

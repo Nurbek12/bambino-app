@@ -2,7 +2,7 @@
     <div class="flex items-center gap-2">
         <div>
             <div class="rounded-xl overflow-hidden relative h-[55px] w-[55px]">
-                <img :src="baseURL+'/'+product.images[0].url" class="w-full h-full object-cover" alt="">
+                <img :src="product.images[0].url" class="w-full h-full object-cover" alt="">
             </div>
         </div>
 
@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-import { baseURL } from '@/api'
 import AppBtn from './app-btn.vue'
 import { useStore } from '../store'
 import { IProduct } from '../constants/types'

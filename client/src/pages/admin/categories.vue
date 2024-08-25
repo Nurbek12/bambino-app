@@ -13,7 +13,7 @@
             </template>
             <template #table-item-image="{tableItem}">
                 <div class="w-[40px] h-[40px] overflow-hidden rounded-xl bg-slate-100">
-                    <img :src="baseURL + '/' + tableItem.image || '/nophoto.jpg'" class="w-full h-full object-cover">
+                    <img :src="tableItem.image || '/nophoto.jpg'" class="w-full h-full object-cover">
                 </div>
             </template>
             <template #table-item-created_at="{tableItem}">
@@ -58,7 +58,6 @@
 </template>
 
 <script setup lang="ts">
-import { baseURL } from '@/api'
 import { ref, reactive, computed } from 'vue'
 import { ICategory } from '@/constants/types'
 import AppBtn from '@/components/app-btn.vue'
@@ -89,7 +88,7 @@ const headers = [
 ]
 
 const currentImage = computed(() => {
-    if(item.image) return baseURL + '/' + item.image
+    if(item.image) return item.image
     else if(image.value) return URL.createObjectURL(image.value)
     return '/nophoto.jpg'
 })

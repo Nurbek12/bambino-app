@@ -23,7 +23,7 @@
                     </app-btn>
                 </template>
             </div>
-            <img :src="baseURL+'/'+product.images?.[0]?.url" class="w-full h-full object-cover" alt="">
+            <img :src="product.images?.[0]?.url" class="w-full h-full object-cover" alt="">
         </div>
         <div class="pt-2">
             <router-link :to="`/product/${product.id}`">{{ product.name }}</router-link>
@@ -56,7 +56,6 @@
 </template>
 
 <script setup lang="ts">
-import { baseURL } from '@/api'
 import AppBtn from './app-btn.vue'
 import { useStore } from '../store'
 import { IProduct } from '../constants/types'

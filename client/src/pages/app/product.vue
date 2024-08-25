@@ -11,7 +11,7 @@
         </div>
         
         <div class="rounded-xl overflow-hidden w-full relative h-[250px]">
-            <img :src="baseURL+'/'+product.images?.[current_image]?.url" class="w-full h-full object-cover" alt="">
+            <img :src="product.images?.[current_image]?.url" class="w-full h-full object-cover" alt="">
         </div>
 
         <div>
@@ -19,7 +19,7 @@
                 <button class="cursor-pointer p-1 w-[55px] h-[55px] rounded-2xl"
                     v-for="img,i in product.images||[]" :key="i" @click="current_image = i"
                     :class="current_image===i?'bg-primary-500':'bg-white'">
-                    <img :src="baseURL +'/'+ img.url" class="rounded-xl object-cover w-full h-full" />
+                    <img :src="img.url" class="rounded-xl object-cover w-full h-full" />
                 </button>
             </div>
         </div>
@@ -81,7 +81,6 @@
 
 <script setup lang="ts">
 import { Alert } from 'vue-tg'
-import { baseURL } from '@/api'
 import { useStore } from '@/store'
 import Stars from '@/components/stars.vue'
 import { get_product } from '@/api/products'

@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -160,6 +160,7 @@ model Admin {
   login String
   password String
   role String
+  tg_id String?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

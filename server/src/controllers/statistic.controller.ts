@@ -51,7 +51,6 @@ export const getStatistics = async (req: Request, res: Response) => {
     }
 }
 
-
 export const setStatistics = async (key: keyof typeof prisma.statistics.fields, value: number) => {
     const d = new Date()
     const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '-')
@@ -74,5 +73,3 @@ export const setStatistics = async (key: keyof typeof prisma.statistics.fields, 
         await prisma.statistics.create({ data: newStatistic })
     }
 }
-
-// setStatistics()

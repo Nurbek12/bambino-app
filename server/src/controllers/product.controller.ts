@@ -131,12 +131,12 @@ export const createProduct =  async (req: Request, res: Response) => {
 
 export const addPhotoToProduct =  async (req: Request, res: Response) => {
     try {
-        const images = await Promise.all((req.files as  Express.Multer.File[]).map((file) => {
+        const images = await Promise.all((req.body.images).map((file: any) => {
             return prisma.image.create({
                 data: {
+                    url: file.url,
                     size: file.size,
-                    url: file.filename,
-                    name: file.originalname,
+                    name: file.name,
                     product_id: +req.params.id,
                 }
             })

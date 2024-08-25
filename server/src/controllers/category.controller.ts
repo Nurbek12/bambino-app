@@ -34,7 +34,6 @@ export const getAllCategories = async (req: Request, res: Response) => {
 
 export const createCategory =  async (req: Request, res: Response) => {
     try {
-        if(req.file) req.body.image = req.file.filename
         const category = await prisma.category.create({ data: req.body })
 
         return res.status(200).json({ data: category })
@@ -46,8 +45,6 @@ export const createCategory =  async (req: Request, res: Response) => {
 
 export const updateCategory =  async (req: Request, res: Response) => {
     try {
-        if(req.file) req.body.image = req.file.filename
-  
         const category = await prisma.category.update({ where: { id: +req.params.id }, data: req.body })
 
         return res.status(200).json({ data: category })

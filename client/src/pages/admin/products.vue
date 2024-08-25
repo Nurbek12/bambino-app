@@ -45,6 +45,7 @@
             
             <app-images v-if="item.images?.length!>0" :is_file="false" :images="item.images!" title="Фотографии продукта" @remove_image="handle_remove_image($event[0], $event[1])" />
 
+            <!-- <div class="text-center" v-show="imgLoading">Загружается фотографии</div> -->
             <app-btn class="rounded-[0.25rem] text-white text-sm" :disabled="createLoading" type="submit">
                 {{ createLoading?'Загружается':'Сохранить' }}
             </app-btn>
@@ -69,6 +70,7 @@ import { create_product, delete_product, get_products, update_product, add_image
 const count = ref(0)
 const dialog = ref(false)
 const loading = ref(false)
+const imgLoading = ref(false)
 const images = ref<File[]>([])
 const items = ref<IProduct[]>([])
 const categories = ref<ICategory[]>([])
@@ -132,11 +134,18 @@ const handle_remove_image = async (id: number, index: number) => {
 }
 
 const handle_add_image = async (id: number) => {
-    const formdata = new FormData()
-    images.value.map(img => formdata.append('image', img))
-    const { data } = await add_image(id, formdata)
-    const index = items.value.findIndex(p => p.id === id)
-    items.value[index].images = [...items.value[index].images||[], ...data.data]
+    try {
+        imgLoading.value = true
+        const formdata = new FormData()
+        images.value.map(img => formdata.append('image', img))
+        const { data } = await add_image(id, formdata)
+        const index = items.value.findIndex(p => p.id === id)
+        items.value[index].images = [...items.value[index].images||[], ...data.data]
+    } catch (error) {
+        console.log(error)
+    } finally {
+        imgLoading.value = false
+    }
 }
 
 const add = async (body: any) => {
@@ -146,7 +155,7 @@ const add = async (body: any) => {
 }
 
 const update = async (index: number, body: any) => {
-    const { id, images, created_at, updated_at, category, ...other } = body
+    const { id, images, created_at, updated_at, category, reviews, ...other } = body
     const { data } = await update_product(id, other)
     Object.assign(items.value[index], data.data)
     return data.data
@@ -206,8 +215,12 @@ const close = () => {
         stock_count: null,
         category_id: undefined,
     })
-    delete item.category
+    delete item.id
     delete item.images
+    delete item.reviews
+    delete item.category
+    delete item.created_at
+    delete item.updated_at
     images.value = []
     dialog.value = false
     itemIndex.value = null

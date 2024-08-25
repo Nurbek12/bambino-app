@@ -132,6 +132,7 @@ export const createProduct =  async (req: Request, res: Response) => {
 export const addPhotoToProduct =  async (req: Request, res: Response) => {
     try {
         const images = await Promise.all((req.body.images).map((file: any) => {
+            console.log('before_creating', file.name)
             return prisma.image.create({
                 data: {
                     url: file.url,
@@ -141,6 +142,7 @@ export const addPhotoToProduct =  async (req: Request, res: Response) => {
                 }
             })
         }))
+        console.log('after_creating', images)
         return res.status(200).json({ data: images })
     } catch (error) {
         console.log(error)

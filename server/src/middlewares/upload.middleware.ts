@@ -39,12 +39,13 @@ export const uploadToCloud = async (req: Request, res: Response, next: NextFunct
                     upload(file, (err: any, data: any) => {
                         if(err) return reject(err)
                         images.push(data)
+                        console.log(data.url)
                         resolve(data)
                     })
                 })
             ))
-            // req.body.images = images
-            // next()
+            req.body.images = images
+            next()
         } else return next()
     } catch (error) {
         console.log(error)

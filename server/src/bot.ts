@@ -6,9 +6,15 @@ import { Bot, GrammyError, HttpError, InlineKeyboard, Keyboard } from 'grammy'
 const bot = new Bot(BOT_TOKEN!)
 const register_users = new Map<number, { phone?: string, address?: string, latitude?: number, longitude?: number  }>()
 
-bot.command('start', async c => {
+bot.command(['start','magazine'], async c => {
     await c.reply('Добро пожаловать в бот', {
-        reply_markup: new InlineKeyboard().text('Использовать приложению', 'use_bot').webApp('Delivery', 'https://be2f2d27a5196e.lhr.life/delivery')
+        reply_markup: new InlineKeyboard().text('Использовать приложению', 'use_bot')
+    })
+})
+
+bot.command('delivery', async c => {
+    await c.reply('Приложения для курьера', {
+        reply_markup: new InlineKeyboard().webApp('Использовать приложению', WEB_APP_URL+'/delivery')
     })
 })
 
@@ -17,12 +23,12 @@ bot.callbackQuery('use_bot', async c => {
 
     const user = await prisma.user.findFirst({ where: { user_tg_id: '' + c.chat?.id } })
     if(user === null) {
-        await c.reply('У вас нет аккоунта', {
+        await c.editMessageText('У вас нет аккоунта', {
             reply_markup: new InlineKeyboard().text('Создать аккоунт', 'create_user')
         })
         return
     }
-    await c.reply('Вы можете использовать приложению', {
+    await c.editMessageText('Вы можете использовать приложению', {
         reply_markup: {
             inline_keyboard: [
                 [
@@ -34,7 +40,6 @@ bot.callbackQuery('use_bot', async c => {
                     }
                 ]
             ],
-            resize_keyboard: true
         }
     })
 })

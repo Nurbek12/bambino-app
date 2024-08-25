@@ -1,33 +1,43 @@
 <template>
     <div class="h-screen w-full flex flex-col gap-2 relative">
-      <div class="w-full flex-1">
-        <mgl-map
-          v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0"
-          :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
-          :center="(center as any)"
-          v-model:zoom="zoom"
-          @map:load="loadMap">
-          <mgl-marker :coordinates="(courierPosition as any)" color="red">
-            <mgl-popup>
-              Курьер - Это вы
-            </mgl-popup>
-          </mgl-marker>
-          <mgl-navigation-control />
-          <mgl-marker v-for="order,i in orders" :coordinates="[order.longitude, order.latitude]" :key="order.id" :color="{'pending':'blue','finish':'green','canceled':'gray'}[order.status]">
-            <mgl-popup>
-              <div>
-                {{ order.user?.first_name }} {{ order.user?.last_name }} - {{ order.user?.phone }}
-              </div>
-              <div class="flex items-center gap-2 mt-2">
-                <app-btn @click="delivered(order.id, i, 'finish')" class="text-sm w-full text-white">Заказ доставлен</app-btn>
-                <!-- <app-btn class="text-sm" @click="delivered(order.id, i, 'canceled')" class="w-full text-white">Заказ доставлен</app-btn> -->
-              </div>
-            </mgl-popup>
-          </mgl-marker>
-        </mgl-map>
-      </div>
-      <div class="container w-full pb-4 py-2">
-        <app-btn @click="sheet=true" class="w-full text-white">Посмотреть заказов</app-btn>
+      <template v-if="open">
+        <div class="w-full flex-1">
+          <mgl-map
+            v-if="courierPosition[0] !== 0 && courierPosition[1] !== 0"
+            :map-style="'https://api.maptiler.com/maps/streets/style.json?key=cQX2iET1gmOW38bedbUh'"
+            :center="(center as any)"
+            v-model:zoom="zoom"
+            @map:load="loadMap">
+            <mgl-marker :coordinates="(courierPosition as any)" color="red">
+              <mgl-popup>
+                Курьер - Это вы
+              </mgl-popup>
+            </mgl-marker>
+            <mgl-navigation-control />
+            <mgl-marker v-for="order,i in orders" :coordinates="[order.longitude, order.latitude]" :key="order.id" :color="{'pending':'blue','finish':'green','canceled':'gray'}[order.status]">
+              <mgl-popup>
+                <div>
+                  {{ order.user?.first_name }} {{ order.user?.last_name }} - {{ order.user?.phone }}
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <app-btn @click="delivered(order.id, i, 'finish')" class="text-sm w-full text-white">Заказ доставлен</app-btn>
+                  <!-- <app-btn class="text-sm" @click="delivered(order.id, i, 'canceled')" class="w-full text-white">Заказ доставлен</app-btn> -->
+                </div>
+              </mgl-popup>
+            </mgl-marker>
+          </mgl-map>
+        </div>
+        <div class="container w-full pb-4 py-2">
+          <app-btn @click="sheet=true" class="w-full text-white">Посмотреть заказов</app-btn>
+        </div>
+      </template>
+      <div v-else class="flex-1">
+        <div class="flex justify-center flex-col gap-4 items-center container h-full">
+          <div>
+            <img class="mx-auto w-full max-w-[300px]" src="/courier.png" alt="">
+          </div>
+          <app-btn @click="startMap" class="w-full text-white">Начинать работу</app-btn>
+        </div>
       </div>
     </div>
     
@@ -57,6 +67,7 @@ import BottomSheet from '@/components/bottom-sheet.vue'
 import { MglMap, MglNavigationControl, MglMarker, MglPopup } from '@indoorequal/vue-maplibre-gl'
 
 const zoom = ref(14)
+const open = ref(false)
 const sheet = ref(false)
 const orders = ref<IOrder[]>([])
 const center = ref<number[]>([0, 0])
@@ -173,7 +184,8 @@ const nearbyOrderId = computed(() => {
   return null;
 })
 
-onMounted(async () => {
+const startMap = async () => {
+  open.value = true
   await getOrders()
 
   if (navigator.geolocation) {
@@ -196,5 +208,5 @@ onMounted(async () => {
       }
     )
   }
-});
+}
 </script>

@@ -14,7 +14,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
         if(search) Object.assign(where, {
             name: {
-                contains: search // TODO: mode: intensive
+                contains: search,
+                mode: "insensitive"
             },
         })
         if(category!==null) Object.assign(where, {

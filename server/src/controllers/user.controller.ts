@@ -28,6 +28,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
                 orderBy,
                 skip: (page-1)*limit,
                 take: limit,
+                select:{
+                    count_of_orders: true,
+                    created_at: true,
+                    first_name: true,
+                    id: true,
+                    last_name: true,
+                }
             })
         ])
 
@@ -62,7 +69,17 @@ export const createUser =  async (req: Request, res: Response) => {
 
 export const updateUser =  async (req: Request, res: Response) => {
     try {
-        const user = await prisma.user.update({ where: { id: +req.params.id }, data: req.body })
+        const user = await prisma.user.update({
+            where: { id: +req.params.id },
+            data: req.body,
+            select:{
+                count_of_orders: true,
+                created_at: true,
+                first_name: true,
+                id: true,
+                last_name: true,
+            }
+        })
 
         return res.status(200).json({ data: user })
     } catch (error) {

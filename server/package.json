@@ -33,6 +33,7 @@
     "express": "^4.19.2",
     "express-fileupload": "^1.5.1",
     "grammy": "^1.28.0",
+    "grammy-scenes": "^10.2.0",
     "imagekit": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",

@@ -32,8 +32,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
             if (max_price !== null)
                 Object.assign(where.price, { lte: max_price });
         }
-        
-
         const [count,products] = await Promise.all([
             prisma.product.count({where}),
             prisma.product.findMany({

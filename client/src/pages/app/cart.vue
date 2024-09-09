@@ -3,7 +3,7 @@
         <div class="grid grid-cols-1 gap-4">
             <cart-product v-for="product in store.get_cart" :key="product.id" :product="product" />
         </div>
-        <div class="w-full">
+        <div class="w-full" v-show="store.get_cart.length>0">
             <div class="w-full bg-gray-100 hover:bg-gray-200 flex cursor-pointer justify-between items-center px-4 py-2"
                 :class="!show_location?'rounded-2xl':'rounded-t-2xl border-b-0'" @click="show_location=!show_location">
                 <h1>Адрес и Местоположения</h1>

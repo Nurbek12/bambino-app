@@ -12,8 +12,8 @@ export const router = createRouter({
             { path: '/orders', component: () => import('../pages/app/orders.vue') },
             { path: '/cart', component: () => import('../pages/app/cart.vue') },
         ], beforeEnter(_, __, next){
-            const webApp = useWebApp()
-            if(webApp.initData === '') return next('/login')
+            // const webApp = useWebApp()
+            // if(webApp.initData === '') return next('/login')
             return next()
         } },
         { path: '/admin', component: () => import('../pages/admin/index.vue'), children: [

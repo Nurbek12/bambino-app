@@ -100,30 +100,31 @@ const handleCreateUser = async (c: any) => {
     try {
         let fuser;
         fuser = await prisma.user.findFirst({ where: { user_tg_id: '' + c.chat?.id } })
+
         if(fuser) return await c.reply('У вас уже есть аккоунт. Вы можете использовать приложению', {
             reply_markup: new InlineKeyboard().webApp('Открыть магазин', WEB_APP_URL!)
         })
 
-        let user = register_users.get(c.chat?.id!)
+        // let user = register_users.get(c.chat?.id!)
 
-        if(!user) {
-            register_users.set(c.chat?.id!, {})
-            user = register_users.get(c.chat?.id!)
-        }
+        // if(!user) {
+        //     register_users.set(c.chat?.id!, {})
+        //     user = register_users.get(c.chat?.id!)
+        // }
 
-        if(!user?.longitude || !user?.latitude) {
-            await c.reply('Нам нужно ваше местоположения и телефон', {
-                reply_markup: new Keyboard().requestLocation('Поделиться c местоположением').resized(),
-            })
-            return
-        }
+        // if(!user?.longitude || !user?.latitude) {
+        //     await c.reply('Нам нужно ваше местоположения и телефон', {
+        //         reply_markup: new Keyboard().requestLocation('Поделиться c местоположением').resized(),
+        //     })
+        //     return
+        // }
         
-        if(!user?.phone) {
-            await c.reply('Нам нужно ваше телефон', {
-                reply_markup: new Keyboard().requestContact('Поделиться c телефоном').resized(),
-            })
-            return
-        }
+        // if(!user?.phone) {
+        //     await c.reply('Нам нужно ваше телефон', {
+        //         reply_markup: new Keyboard().requestContact('Поделиться c телефоном').resized(),
+        //     })
+        //     return
+        // }
         
         await prisma.user.create({data: {
             first_name: c.chat?.first_name!,
@@ -131,9 +132,7 @@ const handleCreateUser = async (c: any) => {
             user_tg_id: ''+c.chat?.id!,
             count_of_orders: 0,
             address: "",
-            phone: user.phone,
-            latitude: user.latitude,
-            longitude: user.longitude
+            phone: '',
         }})
         
         setStatistics('users', 1)
